@@ -12,14 +12,14 @@ class Card(object):
 		if self.rank in ['J', 'Q', 'K']:
 			return 10
 		elif self.rank == 'A':
-			return 11
+			return 11 # don't worry if the score is too high we'll subtract 10 later
 		else:
 			return int(self.rank)
 
 	def __str__(self):
 		return self.rank + ' of ' + self.suit
 
-class Deck:
+class Deck(object):
 	def __init__(self):
 		self.cards = []
 		for s in suits:
@@ -32,23 +32,24 @@ class Deck:
 	def show(self):
 		for c in self.cards:
 			print c
-		print
 
 	def draw(self, number_of_cards, hand):
 		for i in range(number_of_cards):
 			hand.append(self.cards.pop)
-		#return self.cards.pop()
+		# return self.cards.pop()
 
-'''
+
 	# probably don't use this
+	"""
 	def __str__(self):
 		cards = []
 		for c in self.cards:
 			cards.append(str(c))
 		return str(cards)
-'''
+	"""
 
-class Hand:
+
+class Hand(object):
 	def __init__(self):
 		self.cards = []
 		self.value = 0
@@ -58,7 +59,7 @@ class Hand:
 		self.cards.append(card)
 		self.value += card.value
 		
-		# ace score checker
+		# ace checker
 		if card.rank == 'A':
 			self.aces += 1
 		while self.aces > 0:
@@ -69,13 +70,11 @@ class Hand:
 
 class Player(object):
 	def __init__(self, money, bet):
-		self.name = raw_input('What is your name?')
+		self.name = 'Player'
 		self.hand = []
 		self.money = money
 		self.bet = bet
 		self.isBust = False
-		self.blackjack = False
-		self.gameover = False
 
 	def hit(self, deck):
 		self.hand.append(Deck.draw())
@@ -83,7 +82,6 @@ class Player(object):
 	def showHand(self):
 		for c in self.hand:
 			print c
-		print
 
 	def discard(self):
 		return self.hand.pop()
@@ -101,11 +99,21 @@ class Player(object):
 
 class Dealer(Player):
 	def __init__(self):
-		self.name = raw_input('What is your name?')
+		self.name = 'Dealer'
 		self.hand = []
-		self.money = money
+		self.isBust = False
 
 def game():
+	# main gameplay is introduced
 	deck = Deck()
-	player = Player()
+	player = Player(1000, 100)
 	dealer = Dealer()
+
+	if dealer.isBust == True:
+		winner = player
+		player.money = player.money + (player.bet * 2)
+	elif player.isBust == True:
+		winner = dealer
+		player.money = player.money - player.bet
+
+	# play again
